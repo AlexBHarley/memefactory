@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
         assetLists={assets}
         wallets={wallets}
         signerOptions={{
-          preferredSignType: () => "amino",
+          preferredSignType: () => "direct",
         }}
         walletConnectOptions={{
           signClient: {

@@ -21,24 +21,31 @@ import {
 } from "osmojs";
 import { useState } from "react";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 
 const tokenfactory = osmosis.tokenfactory.v1beta1.MessageComposer.withTypeUrl;
 const gamm =
   osmosis.gamm.poolmodels.balancer.v1beta1.MessageComposer.withTypeUrl;
 
 export default function Home() {
+  const { toast } = useToast();
   const chain = useChain("osmosistestnet");
 
   const numPools = useQuery(
     [`num-pools-${chain.chain.chain_name}`],
     async () => {
-      console.log(await chain.getRestEndpoint());
-
-      const { createRPCQueryClient } = osmosis.ClientFactory;
-      const client = await createRPCQueryClient({
+      const client = await osmosis.ClientFactory.createRPCQueryClient({
         rpcEndpoint: await chain.getRpcEndpoint(),
       });
 
@@ -58,6 +65,9 @@ export default function Home() {
   const [osmosLp, setOsmoLp] = useState("");
   const [tokenLp, setTokenLp] = useState("");
   const [burnLp, setBurnLp] = useState(false);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [successDialog, setSuccessDialog] = useState(false);
 
   const onWrite = async () => {
     if (symbol.length < 3) {
@@ -100,23 +110,22 @@ export default function Home() {
         mintToAddress: chain.address!,
         sender: chain.address!,
       }),
-      // Uncaught (in promise) Error: Broadcasting transaction failed with code 4 (codespace: sdk). Log: signature verification failed; please verify account number (1076947), sequence (57) and chain-id (osmosis-1): unauthorized
-      // tokenfactory.setDenomMetadata({
-      //   metadata: {
-      //     base: denom,
-      //     denomUnits: [
-      //       { denom: denom, exponent: 0 },
-      //       { denom: symbol.toLowerCase(), exponent: decimals },
-      //     ],
-      //     description,
-      //     name,
-      //     symbol,
-      //     display: symbol.toLowerCase(),
-      //     uri: "https://",
-      //     // uriHash: "0x",
-      //   },
-      //   sender: chain.address!,
-      // }),
+      tokenfactory.setDenomMetadata({
+        metadata: {
+          base: denom,
+          denomUnits: [
+            { denom: denom, exponent: 0, aliases: [] },
+            { denom: symbol.toLowerCase(), exponent: decimals, aliases: [] },
+          ],
+          description,
+          name,
+          symbol,
+          display: symbol.toLowerCase(),
+          uri: "https://",
+          uriHash: "0x",
+        },
+        sender: chain.address!,
+      }),
       // : Invalid address (empty address string is not allowed): invalid address
       // tokenfactory.changeAdmin({
       //   sender: chain.address!,
@@ -127,7 +136,7 @@ export default function Home() {
     const fees = [
       1_400_000, // createdenom
       100_000, // mint
-      // 200_000, // setDenomMetadata
+      200_000, // setDenomMetadata
       // 200_000, // changeAdmin
     ];
 
@@ -180,19 +189,51 @@ export default function Home() {
         .toString(),
     };
 
-    const response = await client.signAndBroadcast(
-      chain.address!,
-      messages,
-      fee,
-      "Created via memefactory"
-    );
-    console.log(response);
-    console.log(denom);
+    try {
+      const response = await client.signAndBroadcast(
+        chain.address!,
+        messages,
+        fee,
+        "Created via memefactory"
+      );
+      console.log(response);
+      console.log(denom);
+    } catch (e: any) {
+      toast({ title: "Unable to create token", description: e.message });
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  const SuccessDialog = () => (
+    <Dialog open={successDialog} onOpenChange={setSuccessDialog}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{name} deployed to Osmosis!</DialogTitle>
+          <DialogDescription>
+            Get to trading on Osmosis{" "}
+            <a
+              href="https://app.osmosis.zone/?unverified_assets=true&from=ATOM&to=OSMO"
+              target="_blank"
+            >
+              here
+            </a>
+            . You can add and remove liquidity{" "}
+            <a href="https://app.osmosis.zone/pool/1263" target="_blank">
+              here
+            </a>
+            .
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <main className="">
       <div className="max-w-screen-sm mx-auto flex-col items-center  px-3 py-6 space-y-3 md:px-8 md:py-12 md:space-y-2">
+        <SuccessDialog />
+
         {chain.address ? (
           <div>{chain.address}</div>
         ) : (
@@ -295,7 +336,7 @@ export default function Home() {
                 <div className="text-xs text-gray-700">
                   Burning LP tokens can be a sign of confidence for people
                   buying tokens. However, if you opt to burn your LP tokens you
-                  {"won't"} be able to get your money back!
+                  {" won't"} be able to get your money back!
                 </div>
               </div>
             </div>
@@ -305,6 +346,7 @@ export default function Home() {
         <Button
           variant={"default"}
           className="w-full"
+          disabled={submitting}
           onClick={() => {
             if (!chain.address) {
               return;
@@ -312,7 +354,7 @@ export default function Home() {
             onWrite();
           }}
         >
-          Create token
+          {submitting ? "Submitting" : "Create token"}
         </Button>
       </div>
     </main>
