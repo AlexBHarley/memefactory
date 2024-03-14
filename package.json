@@ -1,0 +1,29 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "start-api": "pnpm run --filter ./apps/backend start:prod",
+    "start-indexer": "pnpm run --filter ./apps/indexer start:prod"
+  },
+  "dependencies": {
+    "turbo": "^1.10.3",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@turbo/gen": "^1.9.7",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "workspace:*",
+    "prettier": "^2.5.1"
+  },
+  "packageManager": "pnpm@7.15.0",
+  "name": "fuguworks-monorepo",
+  "engines": {
+    "node": ">=18"
+  },
+  "resolutions": {
+    "@chain-registry/types": "^0.16.0"
+  }
+}
