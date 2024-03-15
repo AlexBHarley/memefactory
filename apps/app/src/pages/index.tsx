@@ -81,6 +81,8 @@ export default function Home() {
   const [osmosLp, setOsmoLp] = useState("");
   const [tokenLp, setTokenLp] = useState("");
   const [burnLp, setBurnLp] = useState(false);
+  const [swapFee, setSwapFee] = useState("");
+  const [exitFee, setExitFee] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [txResponse, setTxResponse] = useState<DeliverTxResponse | null>();
@@ -181,8 +183,8 @@ export default function Home() {
             ],
             sender: chain.address!,
             poolParams: {
-              exitFee: "0",
-              swapFee: "0.01",
+              exitFee,
+              swapFee,
             },
             futurePoolGovernor: "",
           })
@@ -400,17 +402,11 @@ export default function Home() {
         </div>
 
         {poolOptions && (
-          <div className="flex flex-col gap-3 pb-4">
+          <div className="flex flex-col gap-4 pb-4">
             <div
               className="flex items-center gap-2"
               onClick={() => setCreatePool((b) => !b)}
             >
-              <Checkbox
-                // @ts-expect-error
-                value={createPool}
-                onCheckedChange={(b) => setCreatePool(b as boolean)}
-              />
-
               <div>
                 <span className="text-sm">
                   Create liquidity pool ({poolCreationFee} fee)
@@ -429,47 +425,114 @@ export default function Home() {
                   .
                 </div>
               </div>
+
+              <Checkbox
+                // @ts-expect-error
+                value={createPool}
+                onCheckedChange={(b) => setCreatePool(b as boolean)}
+              />
             </div>
 
             <div className="flex flex-col gap-2">
-              <div className="ml-6">
-                <div className="text-sm">Add liquidity</div>
+              <div className="">
+                <div className="text-sm">Starting liquidity</div>
                 <div className="text-xs text-gray-700">
                   This will be the initial liquidity in the trading pool, more
                   can always be added later.
                 </div>
               </div>
 
-              <div className="flex gap-4 ">
-                <Input
-                  value={osmosLp}
-                  onChange={(e) => setOsmoLp(e.target.value)}
-                  placeholder="0 OSMO"
-                />
-                <Input
-                  value={tokenLp}
-                  onChange={(e) => setTokenLp(e.target.value)}
-                  placeholder={`0 ${symbol}`}
-                />
+              <div className="flex gap-4 w-full">
+                <div className="relative w-1/2">
+                  <Input
+                    value={osmosLp}
+                    disabled={!createPool}
+                    onChange={(e) => setOsmoLp(e.target.value)}
+                    placeholder="0"
+                  />
+                  <span className="absolute right-0 top-0 text-zinc-500 px-3 py-2 rounded-lg">
+                    OSMO
+                  </span>
+                </div>
+                <div className="relative w-1/2">
+                  <Input
+                    value={tokenLp}
+                    disabled={!createPool}
+                    onChange={(e) => setTokenLp(e.target.value)}
+                    placeholder={`0`}
+                  />
+                  <span className="absolute right-0 top-0 text-zinc-500 px-3 py-2 rounded-lg">
+                    {symbol || "TOKEN"}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Checkbox
-                // @ts-expect-error
-                value={burnLp}
-                onCheckedChange={(b) => setBurnLp(b as boolean)}
-              />
-
               <div>
                 <span className="text-sm ">Burn LP tokens</span>
                 <div className="text-xs text-gray-700">
                   Burning LP tokens can be a sign of confidence for people
                   buying tokens that the price {"won't crash"}. However, if you
-                  opt to burn your LP tokens you
-                  {" won't"} be able to withdraw your initial liquidity!
+                  opt to burn your LP tokens you {"won't"} be able to withdraw
+                  your initial liquidity!
                 </div>
               </div>
+
+              <Checkbox
+                disabled={!createPool}
+                // @ts-expect-error
+                value={burnLp}
+                onCheckedChange={(b) => setBurnLp(b as boolean)}
+              />
+            </div>
+
+            <div className="flex items-center space-x-8">
+              <div className="flex flex-col w-1/2">
+                <div className="text-sm">Swap fee</div>
+                <div className="text-xs text-gray-700">
+                  Less than 0.01 recommended,{" "}
+                  <a
+                    className="underline"
+                    href="https://osmosis.gitbook.io/o/liquidity-providing/fees#swap-fees"
+                    target="_blank"
+                  >
+                    learn more
+                  </a>
+                  .
+                </div>
+              </div>
+              <Input
+                id="swapFee"
+                disabled={!createPool}
+                placeholder="0.00"
+                value={swapFee}
+                onChange={(e) => setSwapFee(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-center space-x-8">
+              <div className="flex flex-col w-1/2">
+                <div className="text-sm">Exit fee</div>
+                <div className="text-xs text-gray-700">
+                  Less than 0.01 recommended,{" "}
+                  <a
+                    className="underline"
+                    href="https://osmosis.gitbook.io/o/liquidity-providing/fees#exit-fees"
+                    target="_blank"
+                  >
+                    learn more
+                  </a>
+                  .
+                </div>
+              </div>
+              <Input
+                id="exitFee"
+                disabled={!createPool}
+                placeholder="0.00"
+                value={exitFee}
+                onChange={(e) => setExitFee(e.target.value)}
+              />
             </div>
           </div>
         )}
