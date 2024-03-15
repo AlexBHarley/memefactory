@@ -88,7 +88,24 @@ export default function Home() {
   const [txResponse, setTxResponse] = useState<DeliverTxResponse | null>();
 
   const onWrite = async () => {
+    if (!name) {
+      toast({ title: "Token name can't be empty" });
+      return;
+    }
     if (symbol.length < 3) {
+      toast({ title: "Symbol needs 3 or more characters" });
+      return;
+    }
+    if (/^[0-9]/.test(symbol)) {
+      toast({ title: "Symbol can't start with a number" });
+      return;
+    }
+    if (isNaN(parseFloat(swapFee)) || parseFloat(swapFee) > 0.1) {
+      toast({ title: "Invalid swap fee" });
+      return;
+    }
+    if (isNaN(parseFloat(exitFee)) || parseFloat(exitFee) > 0.1) {
+      toast({ title: "Invalid exit fee" });
       return;
     }
 
@@ -138,7 +155,11 @@ export default function Home() {
             base: denom,
             denomUnits: [
               { denom: denom, exponent: 0, aliases: [] },
-              { denom: symbol.toLowerCase(), exponent: decimals, aliases: [] },
+              {
+                denom: symbol.toLowerCase(),
+                exponent: decimals,
+                aliases: [],
+              },
             ],
             description,
             name,
@@ -335,10 +356,10 @@ export default function Home() {
         {!!txResponse && <Confetti />}
 
         <div>
-          <div className="font-bold">{appName}</div>
-          <div className="text-sm">
-            Deploy native tokens on {displayName} and configure liquidity pools
-            in one easy transaction.
+          <div className="font-semibold text-lg">{appName}</div>
+          <div className="text-sm text-gray-700 mt-1">
+            Deploy a native token, configure the liquidity pool and burn your LP
+            tokens in one easy transaction.
           </div>
         </div>
 
