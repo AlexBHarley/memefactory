@@ -6,7 +6,7 @@ export const osmosisApp = isTestnet
 
 export const poolCreationFee = isTestnet ? "100 OSMO" : "100 USDC";
 
-export const chainName = isTestnet ? "osmosis-testnet" : "osmosis";
+export const chainName = isTestnet ? "osmosistestnet" : "osmosis";
 export const displayName = isTestnet ? "Osmosis Testnet" : "Osmosis";
 
 export const appName = `${displayName} Token Factory`;
