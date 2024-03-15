@@ -193,9 +193,6 @@ export default function Home() {
       }
 
       if (burnLp && createPool) {
-        // todo: use fetched numPools to calculate LP token denom
-        // todo: burn LP token
-
         const lpDenom = `gamm/pool/${numPools.data! + BigInt(1)}`;
         messages.push(
           bank.send({
@@ -269,7 +266,7 @@ export default function Home() {
               <div>{"What's next?"}</div>
               <ul className="list-disc ml-4 space-y-2">
                 <li>
-                  View the deployment transcation{" "}
+                  View the deployment transaction{" "}
                   <a
                     href={`https://mintscan.io/${
                       isTestnet ? "osmosis-testnet" : "osmosis"
@@ -341,7 +338,7 @@ export default function Home() {
           <div className="font-bold">{displayName} Token Factory</div>
           <div className="text-sm">
             Deploy native tokens on {displayName} and configure liquidity pools
-            in one easy transactions.
+            in one easy transaction.
           </div>
         </div>
 
