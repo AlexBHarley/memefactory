@@ -35,7 +35,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { appName, isTestnet, osmosisApp, poolCreationFee } from "@/constants";
+import {
+  appName,
+  chainName,
+  displayName,
+  isTestnet,
+  osmosisApp,
+  poolCreationFee,
+} from "@/constants";
 
 const tokenfactory = osmosis.tokenfactory.v1beta1.MessageComposer.withTypeUrl;
 const gamm =
@@ -48,7 +55,7 @@ const BURN_ADDRESS = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
 
 export default function Home() {
   const { toast } = useToast();
-  const chain = useChain(isTestnet ? "osmosistestnet" : "osmosis");
+  const chain = useChain(chainName);
 
   const numPools = useQuery(
     [`num-pools-${chain.chain.chain_name}`],
@@ -221,9 +228,8 @@ export default function Home() {
         chain.address!,
         messages,
         fee,
-        "Created via memefactory"
+        `Created via ${appName}`
       );
-      console.log(response);
 
       if (response.code === 0) {
         // @ts-expect-error
@@ -254,7 +260,9 @@ export default function Home() {
       <Dialog open={!!txResponse} onOpenChange={() => setTxResponse(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{name} is deployed to Osmosis!</DialogTitle>
+            <DialogTitle>
+              {name} is deployed to {displayName}!
+            </DialogTitle>
             <DialogDescription className="flex flex-col gap-2 pt-2">
               <div>{"What's next?"}</div>
               <ul className="list-disc ml-4 space-y-2">
@@ -328,10 +336,10 @@ export default function Home() {
         {!!txResponse && <Confetti />}
 
         <div>
-          <div className="font-bold">Osmosis token factory</div>
+          <div className="font-bold">{displayName} Token Factory</div>
           <div className="text-sm">
-            Deploy native tokens on Osmosis and configure liquidity pools in one
-            easy tx.
+            Deploy native tokens on {displayName} and configure liquidity pools
+            in one easy transactions.
           </div>
         </div>
 
