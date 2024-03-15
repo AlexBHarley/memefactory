@@ -335,7 +335,7 @@ export default function Home() {
         {!!txResponse && <Confetti />}
 
         <div>
-          <div className="font-bold">{displayName} Token Factory</div>
+          <div className="font-bold">{appName}</div>
           <div className="text-sm">
             Deploy native tokens on {displayName} and configure liquidity pools
             in one easy transaction.
