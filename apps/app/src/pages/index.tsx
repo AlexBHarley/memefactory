@@ -35,7 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { appName, isTestnet, osmosisApp } from "@/constants";
+import { appName, isTestnet, osmosisApp, poolCreationFee } from "@/constants";
 
 const tokenfactory = osmosis.tokenfactory.v1beta1.MessageComposer.withTypeUrl;
 const gamm =
@@ -405,11 +405,12 @@ export default function Home() {
 
               <div>
                 <span className="text-sm">
-                  Create liquidity pool (100 OSMO fee)
+                  Create liquidity pool ({poolCreationFee} fee)
                 </span>
                 <div className="text-xs text-gray-700">
-                  Note that the 100 OSMO fee is charged by Osmosis and sent to
-                  the Community Pool. More information on this can be found{" "}
+                  Note that the {poolCreationFee} fee is charged by Osmosis and
+                  sent to the Community Pool. More information on this can be
+                  found{" "}
                   <a
                     className="underline"
                     href="https://wallet.keplr.app/chains/osmosis/proposals/45"

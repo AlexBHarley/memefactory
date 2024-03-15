@@ -5,3 +5,5 @@ export const osmosisApp = isTestnet
   : "https://app.osmosis.zone";
 
 export const appName = "Meme Token Factory";
+
+export const poolCreationFee = isTestnet ? "100 OSMO" : "100 USDC";
